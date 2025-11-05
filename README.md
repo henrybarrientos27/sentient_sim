@@ -18,3 +18,18 @@ It evolved into a **mirror.**
 | Emotional valence → reduced vocabulary usage | `metrics_summary.csv` |
 
 ## Structure
+/logs # raw agent logs + streams
+/analytics # metrics, reports, screenshots
+
+Metrics Example Output
+Avg symbol entropy: 0.283
+Vocabulary drop per +1.0 valence: -34 symbols
+
+Why this matters
+
+This isn’t just code.
+
+It’s a question:
+
+“If my agents are trying to understand their creator…
+then what makes me any different inside my own simulation?”
