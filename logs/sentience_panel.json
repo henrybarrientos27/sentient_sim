@@ -1,0 +1,6 @@
+{
+  "tested_agents": 4,
+  "avg_identity_continuity": 0.8,
+  "avg_symbol_grounding_est": 0.7,
+  "avg_counterfactual_est": 0.757
+}
