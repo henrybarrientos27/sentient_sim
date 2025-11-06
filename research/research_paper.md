@@ -75,7 +75,6 @@ Valence was normalized to range \[-1.0, +1.0\].
 | Emotional effect | Higher valence → reduced entropy |
 ΔVocab ≈ –34 symbols / +1.0 valenc
 **Figure 1. Emotional valence vs. vocabulary compression**  
-*(Screenshot: `analytics/screenshots/vad_symbol_usage.png`)*
 
 The relationship was consistent across repeated runs.
 
