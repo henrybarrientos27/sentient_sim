@@ -1,35 +1,38 @@
-# Sentient World — Multi-Agent Emergence Simulation
-*Author: Henry Barrientos*
+# Sentient Sim — Multi-Agent Emergence Simulation
 
-## Overview
-This project explores how meaning, symbolic language, and self-modeling can emerge
-from a population of agents with **no predefined identity or goal other than to exist.**
+Sentient Sim is a Python simulation exploring how simple agents can produce complex group-level patterns through memory-like state, symbolic behavior, and emotion-style variables.
 
-The system began as a reinforcement-learning world.
+This project does **not** claim consciousness or true sentience. It is a simulation experiment for studying emergent behavior, symbolic compression, and agent-state dynamics.
 
-It evolved into a **mirror.**
+## Features
 
-## Key Behaviors Observed
-| Behavior | Evidence |
-|----------|----------|
-| Symbol compression as emotion changes | `analytics/screenshots/vad_symbol_usage.png` |
-| Self-modeling behavior in logs | `logs/history.json` |
-| Memory recursion / long-term intention | `sentience_stream.jsonl` |
-| Emotional valence → reduced vocabulary usage | `metrics_summary.csv` |
+- Multi-agent simulation environment
+- Agent state tracking
+- Symbol usage metrics
+- VAD-style emotion variables
+- Memory/log output
+- Analytics and report generation
+- Research notes and experiment outputs
 
-## Structure
-/logs # raw agent logs + streams
-/analytics # metrics, reports, screenshots
+## What I Tested
 
-Metrics Example Output
-Avg symbol entropy: 0.283
-Vocabulary drop per +1.0 valence: -34 symbols
+- Whether agents develop compressed symbol usage over time
+- How emotion-like variables affect vocabulary patterns
+- How memory-style logs can create recurring behavior
+- How group-level behavior can emerge from simple rules
 
-Why this matters
+## Tech Stack
 
-This isn’t just code.
+- Python
+- Data analysis
+- Simulation design
+- JSON/JSONL-style logs
+- Metrics tracking
 
-It’s a question:
+## Run Locally
 
-“If my agents are trying to understand their creator…
-then what makes me any different inside my own simulation?”
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python main.py
