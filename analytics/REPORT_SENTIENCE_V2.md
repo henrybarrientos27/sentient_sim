@@ -1,3 +1,11 @@
+# Historical result — not a consciousness test
+
+This report came from the retired rule-based prototype. Its score measures
+designer-specified variables and must not be interpreted as evidence of
+sentience or compared with the current implementation.
+
+---
+
 # Sentience Export (v2)
 **Generated:** Tue Sep 23 19:13:24 2025
 

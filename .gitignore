@@ -3,6 +3,7 @@ venv/
 .venv/
 env/
 __pycache__/
+*.egg-info/
 *.pyc
 *.pyo
 *.pyd
@@ -17,6 +18,7 @@ __pycache__/
 *.jsonl
 logs/
 runs/
+experiments/
 snapshots/
 results/
 archives/
@@ -32,6 +34,7 @@ history.json
 tmux_capture.txt
 sentience_hits.txt
 sentience_stream*.jsonl
+*.json.gz
 
 # Local binaries / tunnels
 cloudflared

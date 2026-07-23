@@ -1,3 +1,14 @@
+# Historical note
+
+This document describes the retired rule-based prototype and is retained for
+provenance only. Its emotion variables, reflection events, language-like
+symbols, and composite “sentience” metric were specified by the designer, so
+they cannot establish consciousness or independent emergence. The current
+implementation and its causal controls are documented in the repository
+`README.md` and `src/ARCHITECTURE.md`.
+
+---
+
 # Project Emergence  
 **Emergence of Emotion-Driven Symbol Compression in a Multi-Agent Simulation**  
 Author: Henry Barrientos  
