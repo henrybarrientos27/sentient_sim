@@ -30,7 +30,10 @@ If confirmatory-v1 has already run before external registration, describe it as
 3. Archive the confirmatory result bundle separately or with the release. Include
    the protocol, manifests, `runs.csv`, `contrasts.csv`, complete JSON, report,
    environment details, and source commit.
-4. Add the issued DOI to `CITATION.cff` and the manuscript. A Zenodo DOI means
+4. Choose and declare a data license in the deposit metadata. CC BY 4.0 preserves
+   attribution; CC0 maximizes unrestricted reuse. This legal choice belongs to
+   the author and is not inferred from the code's MIT license.
+5. Add the issued DOI to `CITATION.cff` and the manuscript. A Zenodo DOI means
    the artifact is public and citable; it does not mean it was peer reviewed.
 
 ## Stage 4: manuscript

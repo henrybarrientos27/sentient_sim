@@ -22,7 +22,8 @@
 - Prediction supplies a self-supervised learning target supplied by the world.
 - A single persistence signal makes policy learning possible. With no value
   signal whatsoever, stochastic drift is the only optimization criterion.
-- Mutation and inheritance enable open-ended population adaptation.
+- Mutation and inheritance enable population adaptation. They do not by
+  themselves demonstrate open-ended evolution.
 - Local continuous signals permit communication without a predefined language.
 - A decaying writable scalar field permits persistent environmental modification
   without predefined artifact or tool categories.

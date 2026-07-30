@@ -1,7 +1,7 @@
 ---
 title: "Causal characterization of adaptive mechanisms in a resource-limited multi-agent simulation"
 author: "Henry Barrientos"
-date: "Draft"
+date: "Draft — 2026-07-29"
 ---
 
 # Abstract
@@ -16,9 +16,14 @@ cost-matched interventions over independently seeded runs. The study measures
 prediction and ecological performance and explicitly excludes consciousness,
 sentience, semantic language, and subjective experience from its claims.
 
-**Results placeholder:** Replace this paragraph only from the immutable
-confirmatory report. State the number of seeds, all five adjusted tests, effect
-sizes and intervals, population-cap diagnostic, extinctions, and null outcomes.
+Across 30 held-out paired seeds and 150 planned runs with a 3,000-tick horizon,
+online learning lowered one-step prediction error and improved net energy input per agent-step
+relative to frozen learning. Recurrent carryover produced a smaller supported
+ecological benefit. Neither signal delivery nor writable trace coupling produced
+a supported ecological benefit after multiplicity correction. Nine runs became
+extinct, all in the frozen condition, and no condition spent time at the
+population safety cap. These findings establish mechanism effects only within
+the specified model and parameter regime.
 
 # 1. Introduction
 
@@ -33,6 +38,24 @@ The contribution is a reproducible experimental scaffold rather than a theory or
 detector of consciousness. It combines explicit architectural priors, exact
 checkpoint continuation, cost-matched causal controls, seed-level inference,
 interruption-safe results, and machine-readable provenance.
+
+## 1.1 Related work
+
+The ODD protocol provides a standard structure for making agent-based models
+understandable and reproducible (Grimm et al., 2020). Artificial-life research
+also cautions that long duration or an increasing designer-chosen metric is not
+sufficient to establish open-ended evolution (Hintze, 2019). MODES separates
+change, novelty, complexity, and ecological potential rather than collapsing
+them into a single label (Dolson et al., 2019). Consistent with those cautions,
+this study does not claim open-ended evolution and reports separate observables.
+
+Learning-progress rewards are one operational family of computational intrinsic
+motivation (Oudeyer & Kaplan, 2007); here that term denotes a numeric algorithm,
+not a psychological state. Work on grounded emergent communication evaluates
+signals through their functional role in accomplishing environmental goals
+(Mordatch & Abbeel, 2018). The present study applies the same general demand for
+causal utility, but its continuous signal vectors are not words and no semantic
+or compositional language test is performed.
 
 # 2. Methods
 
@@ -69,9 +92,35 @@ contrasts. Agents and time samples within a seed are not treated as independent.
 
 # 3. Results
 
-Insert the generated `REPORT.md` table and a compact figure derived directly
-from `runs.csv`. Report all confirmatory and validity outcomes, not only those
-passing a significance threshold.
+All 150 planned seed-condition runs completed. Table 1 reports the five pre-
+specified paired contrasts. Positive differences favor the adaptive condition.
+
+| Contrast | Favorable mean difference | 95% bootstrap CI | Paired dz | BH q | Supported |
+|---|---:|---:|---:|---:|:---:|
+| Prediction vs frozen | 0.181829 | [0.166414, 0.196341] | 4.235 | <0.0001 | yes |
+| Ecological performance vs frozen | 0.002286 | [0.001948, 0.002589] | 2.484 | <0.0001 | yes |
+| Ecological performance vs memoryless | 0.000033 | [0.000019, 0.000048] | 0.801 | 0.00047 | yes |
+| Ecological performance vs signal blocked | 0.000008 | [-0.000004, 0.000021] | 0.230 | 0.216 | no |
+| Ecological performance vs trace blocked | 0.000010 | [-0.000003, 0.000023] | 0.276 | 0.179 | no |
+
+Adaptive one-step prediction error was 0.01359, compared with 0.19542 under
+frozen learning. This confirms that the online predictor changed its directly
+optimized target; it is a manipulation check rather than independent evidence of
+intelligence. Adaptive net energy input per agent-step was 0.0000787, compared
+with -0.0022074 under frozen learning. The favorable paired ecological
+difference was positive in 28 of 30 seeds. The adaptive-versus-memoryless
+ecological difference was positive in 23 of 30 seeds.
+
+The signaling and trace intervals both crossed zero, their adjusted q-values
+were 0.216 and 0.179, and each favorable difference occurred in 17 of 30 seeds.
+The data therefore do not demonstrate useful communication or useful external
+memory under this protocol.
+
+Nine of 30 frozen runs became extinct before tick 3,000. No adaptive,
+memoryless, signal-blocked, or trace-blocked run became extinct. Adaptive
+populations averaged 57.05 agents over the latter-half window, but population
+was not a primary endpoint. No run began a tick at the population safety cap, so
+the pre-specified capacity-interference threshold was not exceeded.
 
 # 4. Discussion
 
@@ -81,10 +130,49 @@ energy objective, architectural priors, seed-specific rather than agent-specific
 interfaces, absence of empirical input data, sensitivity to ecological settings,
 and the inability of behavioral observations to establish private experience.
 
+The `memoryless` label refers specifically to recurrent hidden-state carryover;
+agents still observe age, velocity, current energy change, and their previous
+action, so the intervention is not removal of every temporally informative
+variable. Pairing matches initialization within a seed, but random streams can
+diverge after interventions alter behavior or population size. The ecological
+endpoint measures gross harvested energy minus costs and can include harvest
+that is lost at the storage cap. Runs are finite, use one calibrated parameter
+regime, and do not establish unbounded novelty or complexity. These limitations
+bound all generalization.
+
+The strongest non-circular result is that online adaptation changed an
+ecological endpoint in addition to its directly trained prediction loss. The
+recurrent-state contrast supports a more modest claim: retaining hidden state
+improved ecological performance under the model's partially observed dynamics.
+The unsupported signal and trace contrasts are equally important. Continuous
+outputs, nonzero signal power, or visible trace structure are not sufficient to
+claim communication, language, artifact use, or external memory without a
+causal performance benefit and semantic tests.
+
 # 5. Reproducibility and availability
 
-Record the public repository URL, release tag, source commit, archived software
-DOI, archived result DOI, protocol hash, and one-command reproduction procedure.
+The authoritative simulation used commit
+`b18257e149f0fc72f5c072520a29c97c004a11ad`, package-source SHA-256
+`3c9873da4d7d2031ae6d5e7d8c477742228567dbd15d8bb37d44d5af1914ab77`,
+and protocol SHA-256
+`64c634e12075c66cad1609381ef324a58bb700df8d4bbd7db30b569de9feb844`.
+It ran under Python 3.10.12 and NumPy 2.2.6 on Linux. The complete campaign is
+reproduced with:
+
+```bash
+sentient-sim experiment \
+  --config research/confirmatory_config_v1.json \
+  --ticks 3000 \
+  --replicates 30 \
+  --workers 3 \
+  --output experiments/confirmatory-v1
+```
+
+The public repository is
+<https://github.com/henrybarrientos27/sentient_sim>. A release tag and archival
+DOIs must be added here after the author reviews the materials, publishes the
+research branch, and completes the Zenodo deposits. Until then this document is
+a manuscript draft, not a peer-reviewed publication.
 
 # AI-assistance disclosure
 
@@ -97,3 +185,18 @@ Grimm, V., et al. (2020). The ODD protocol for describing agent-based and other
 simulation models: A second update to improve clarity, replication, and
 structural realism. *Journal of Artificial Societies and Social Simulation*,
 23(2), 7. <https://doi.org/10.18564/jasss.4259>
+
+Dolson, E. L., Vostinar, A. E., Wiser, M. J., & Ofria, C. (2019). The MODES
+Toolbox: Measurements of open-ended dynamics in evolving systems. *Artificial
+Life*, 25(1), 50–73. <https://doi.org/10.1162/artl_a_00280>
+
+Hintze, A. (2019). Open-endedness for the sake of open-endedness. *Artificial
+Life*, 25(2), 198–206. <https://doi.org/10.1162/artl_a_00289>
+
+Mordatch, I., & Abbeel, P. (2018). Emergence of grounded compositional language
+in multi-agent populations. *Proceedings of the AAAI Conference on Artificial
+Intelligence*, 32(1). <https://doi.org/10.1609/aaai.v32i1.11492>
+
+Oudeyer, P.-Y., & Kaplan, F. (2007). What is intrinsic motivation? A typology of
+computational approaches. *Frontiers in Neurorobotics*, 1, 6.
+<https://doi.org/10.3389/neuro.12.006.2007>

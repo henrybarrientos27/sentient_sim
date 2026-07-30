@@ -4,6 +4,10 @@ venv/
 env/
 __pycache__/
 *.egg-info/
+build/
+dist/
+work/
+*.whl
 *.pyc
 *.pyo
 *.pyd

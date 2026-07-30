@@ -104,6 +104,11 @@ Measurements are descriptive and remain separate. No composite “sentience
 score” is calculated. Confirmatory inference uses seed-level endpoints; agents
 and repeated time samples are not counted as independent observations.
 
+The `memoryless` intervention removes recurrent hidden-state carryover, not all
+temporally informative inputs: age, velocity, energy change, and previous action
+remain observable. Paired seeds match initialization, but pseudorandom streams
+can diverge after an intervention changes behavior, births, or deaths.
+
 ## 3. Details
 
 ### 3.1 Initialization

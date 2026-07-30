@@ -122,7 +122,9 @@ correction across five fixed contrasts.
   model specification.
 - `research/PREREGISTRATION.md` fixes hypotheses, outcomes, analysis, stopping,
   exclusions, and the separation between pilot and confirmatory seeds.
+- `research/DATA_DICTIONARY.md` defines every archived CSV field.
 - `src/ARCHITECTURE.md` gives a shorter implementation map.
+- `docs/API.md` documents the supported Python interface and examples.
 - `AI_USAGE.md` records the disclosure that must be completed and personally
   reviewed before submission.
 

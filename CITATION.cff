@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite the archived release."
-title: "Sentient Sim: A controlled minimal-prior adaptive-agent simulation"
+title: "Sentient Sim: A controlled adaptive-agent simulation with causal ablations"
 type: software
 authors:
   - family-names: Barrientos

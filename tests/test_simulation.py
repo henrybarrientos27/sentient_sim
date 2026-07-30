@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -81,6 +82,30 @@ class SimulationTests(unittest.TestCase):
         for left, right in zip(original.agents, restored.agents):
             np.testing.assert_allclose(left.w_actor, right.w_actor, rtol=0, atol=0)
 
+    def test_v2_checkpoint_state_migrates(self):
+        original = World(small_config())
+        for _ in range(4):
+            original.step()
+        state = original.to_state()
+        state["format_version"] = 2
+        for field in (
+            "agent_steps",
+            "capacity_ticks",
+            "resource_extracted",
+            "harvest_energy",
+            "energy_cost",
+            "last_resource_extracted",
+            "last_harvest_energy",
+            "last_energy_cost",
+            "last_agent_steps",
+        ):
+            state.pop(field)
+        migrated = World.from_state(state)
+        self.assertEqual(migrated.agent_steps, 0)
+        migrated.step()
+        self.assertGreater(migrated.agent_steps, 0)
+        self.assertTrue(np.isfinite(migrated.energy_cost))
+
     def test_ablation_worlds_have_matched_initialization(self):
         adaptive = World(small_config())
         signal_blocked = World(small_config(signaling_enabled=False))
@@ -159,6 +184,22 @@ class SimulationTests(unittest.TestCase):
                     replicates=2,
                 )
         self.assertEqual(first, second)
+
+    def test_experiment_refuses_protocol_or_source_mismatch(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            config = small_config(initial_agents=4, max_agents=8)
+            with redirect_stdout(StringIO()):
+                run_ablation_experiment(config, 2, output, replicates=1)
+            with self.assertRaisesRegex(ValueError, "different protocol"):
+                run_ablation_experiment(config, 3, output, replicates=1)
+
+            run_path = output / "runs" / "seed-00000019" / "adaptive.json"
+            record = json.loads(run_path.read_text())
+            record["source_sha256"] = "not-the-source"
+            run_path.write_text(json.dumps(record))
+            with self.assertRaisesRegex(ValueError, "source mismatch"):
+                run_ablation_experiment(config, 2, output, replicates=1)
 
 
 if __name__ == "__main__":
