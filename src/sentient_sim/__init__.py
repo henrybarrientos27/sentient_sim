@@ -8,5 +8,4 @@ from .config import SimulationConfig
 from .world import World
 
 __all__ = ["SimulationConfig", "World"]
-__version__ = "0.3.0"
-
+__version__ = "0.4.0"

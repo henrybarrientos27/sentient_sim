@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import json
+from dataclasses import replace
 from pathlib import Path
 
 from .config import SimulationConfig
@@ -10,11 +12,12 @@ from .runner import run_world
 
 def _common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--ticks", type=int, default=2000)
-    parser.add_argument("--seed", type=int, default=7)
-    parser.add_argument("--agents", type=int, default=48)
-    parser.add_argument("--max-agents", type=int, default=256)
-    parser.add_argument("--hidden", type=int, default=24)
-    parser.add_argument("--signals", type=int, default=6)
+    parser.add_argument("--config", type=Path, help="JSON file containing simulation parameters")
+    parser.add_argument("--seed", type=int)
+    parser.add_argument("--agents", type=int)
+    parser.add_argument("--max-agents", type=int)
+    parser.add_argument("--hidden", type=int)
+    parser.add_argument("--signals", type=int)
     parser.add_argument("--output", type=Path, required=True)
 
 
@@ -45,20 +48,40 @@ def build_parser() -> argparse.ArgumentParser:
         default=1,
         help="run consecutive seeds starting at --seed",
     )
+    experiment_parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="independent worker processes; completed runs are cached for safe restart",
+    )
     return parser
 
 
 def _config(args: argparse.Namespace) -> SimulationConfig:
-    return SimulationConfig(
-        seed=args.seed,
-        initial_agents=args.agents,
-        max_agents=args.max_agents,
-        hidden_dim=args.hidden,
-        signal_dim=args.signals,
-        learning_enabled=not getattr(args, "frozen", False),
-        recurrent_memory=not getattr(args, "memoryless", False),
-        signaling_enabled=not getattr(args, "silent", False),
-        environmental_memory_enabled=not getattr(args, "no_trace", False),
+    if args.config:
+        config = SimulationConfig.from_dict(json.loads(args.config.read_text()))
+    else:
+        config = SimulationConfig()
+    overrides = {
+        name: value
+        for name, value in {
+            "seed": args.seed,
+            "initial_agents": args.agents,
+            "max_agents": args.max_agents,
+            "hidden_dim": args.hidden,
+            "signal_dim": args.signals,
+        }.items()
+        if value is not None
+    }
+    return replace(
+        config,
+        **overrides,
+        learning_enabled=config.learning_enabled and not getattr(args, "frozen", False),
+        recurrent_memory=config.recurrent_memory and not getattr(args, "memoryless", False),
+        signaling_enabled=config.signaling_enabled and not getattr(args, "silent", False),
+        environmental_memory_enabled=(
+            config.environmental_memory_enabled and not getattr(args, "no_trace", False)
+        ),
     )
 
 
@@ -77,5 +100,11 @@ def main(argv: list[str] | None = None) -> int:
             quiet=args.quiet,
         )
     else:
-        run_ablation_experiment(config, args.ticks, args.output, args.replicates)
+        run_ablation_experiment(
+            config,
+            args.ticks,
+            args.output,
+            args.replicates,
+            workers=args.workers,
+        )
     return 0

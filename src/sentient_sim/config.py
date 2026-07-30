@@ -85,6 +85,37 @@ class SimulationConfig:
             raise ValueError("max_energy must exceed reproduction_threshold")
         if self.exploration_std <= 0:
             raise ValueError("exploration_std must be positive")
+        nonnegative_fields = {
+            "basal_cost": self.basal_cost,
+            "movement_cost": self.movement_cost,
+            "signal_cost": self.signal_cost,
+            "harvest_rate": self.harvest_rate,
+            "harvest_efficiency": self.harvest_efficiency,
+            "resource_regen": self.resource_regen,
+            "trace_decay": self.trace_decay,
+            "trace_write_rate": self.trace_write_rate,
+            "trace_write_cost": self.trace_write_cost,
+            "reproduction_probability": self.reproduction_probability,
+            "mutation_scale": self.mutation_scale,
+            "prediction_learning_rate": self.prediction_learning_rate,
+            "representation_learning_rate": self.representation_learning_rate,
+            "actor_learning_rate": self.actor_learning_rate,
+            "curiosity_scale": self.curiosity_scale,
+        }
+        for name, value in nonnegative_fields.items():
+            if value < 0:
+                raise ValueError(f"{name} cannot be negative")
+        probability_fields = {
+            "reproduction_probability": self.reproduction_probability,
+            "harvest_efficiency": self.harvest_efficiency,
+        }
+        for name, value in probability_fields.items():
+            if value > 1:
+                raise ValueError(f"{name} cannot exceed 1")
+        if not 0 <= self.resource_regen <= 1:
+            raise ValueError("resource_regen must be between 0 and 1")
+        if not 0 <= self.trace_decay <= 1:
+            raise ValueError("trace_decay must be between 0 and 1")
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

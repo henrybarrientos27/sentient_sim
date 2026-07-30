@@ -58,6 +58,9 @@ def measure(world: World) -> dict[str, float | int]:
         [agent.previous_action for agent in agents], dtype=np.float64
     ) if agents else np.empty((0, world.config.actuator_dim))
     behavioral_diversity = float(np.mean(np.std(actions, axis=0))) if len(actions) > 1 else 0.0
+    agent_steps = max(world.agent_steps, 1)
+    last_agent_steps = max(world.last_agent_steps, 1)
+    represented_roots = len({agent.root_identifier for agent in agents})
     return {
         "tick": world.tick,
         "population": len(agents),
@@ -66,7 +69,23 @@ def measure(world: World) -> dict[str, float | int]:
         "max_generation": max((agent.generation for agent in agents), default=0),
         "mean_age": _mean(agent.age for agent in agents),
         "mean_energy": _mean(agent.energy for agent in agents),
+        "mean_reward": _mean(agent.pending_reward for agent in agents),
         "resource_fraction": float(np.mean(world.resource) / world.config.resource_capacity),
+        "population_exposure": float(world.agent_steps / max(world.tick, 1)),
+        "capacity_fraction": float(len(agents) / world.config.max_agents),
+        "capacity_tick_fraction": float(world.capacity_ticks / max(world.tick, 1)),
+        "root_lineage_survival": float(represented_roots / world.config.initial_agents),
+        "harvest_energy_per_agent_step": float(world.harvest_energy / agent_steps),
+        "energy_cost_per_agent_step": float(world.energy_cost / agent_steps),
+        "net_energy_input_per_agent_step": float(
+            (world.harvest_energy - world.energy_cost) / agent_steps
+        ),
+        "instant_harvest_energy_per_agent": float(
+            world.last_harvest_energy / last_agent_steps
+        ),
+        "instant_energy_cost_per_agent": float(world.last_energy_cost / last_agent_steps),
+        "birth_rate_per_1000_agent_steps": float(1000.0 * world.births / agent_steps),
+        "death_rate_per_1000_agent_steps": float(1000.0 * world.deaths / agent_steps),
         "environmental_trace_power": float(np.mean(np.abs(world.trace))),
         "environmental_trace_structure": float(np.std(world.trace)),
         "prediction_error": _mean(agent.stats.prediction_error for agent in agents),

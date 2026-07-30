@@ -19,6 +19,15 @@ class World:
         self.tick = 0
         self.births = 0
         self.deaths = 0
+        self.agent_steps = 0
+        self.capacity_ticks = 0
+        self.resource_extracted = 0.0
+        self.harvest_energy = 0.0
+        self.energy_cost = 0.0
+        self.last_resource_extracted = 0.0
+        self.last_harvest_energy = 0.0
+        self.last_energy_cost = 0.0
+        self.last_agent_steps = 0
         self.next_agent_identifier = 0
         self.signal_outcome_trace: deque[tuple[float, float]] = deque(maxlen=5000)
 
@@ -124,7 +133,9 @@ class World:
                 if px == x and py == y:
                     count -= 1
                 occupancy_patch.append(np.tanh(max(0, count) / 3.0))
-                trace_patch.append(self.trace[py, px])
+                trace_patch.append(
+                    self.trace[py, px] if self.config.environmental_memory_enabled else 0.0
+                )
 
         internal = [
             np.tanh(agent.energy / self.config.initial_energy - 1.0),
@@ -155,6 +166,13 @@ class World:
         np.clip(self.resource, 0.0, cfg.resource_capacity, out=self.resource)
         self.trace *= 1.0 - cfg.trace_decay
         self._build_spatial_cache()
+        self.last_resource_extracted = 0.0
+        self.last_harvest_energy = 0.0
+        self.last_energy_cost = 0.0
+        self.last_agent_steps = len(self.agents)
+        self.agent_steps += self.last_agent_steps
+        if len(self.agents) >= cfg.max_agents:
+            self.capacity_ticks += 1
 
         decisions: list[tuple[Agent, np.ndarray, np.ndarray, float]] = []
         for agent in list(self.agents):
@@ -191,15 +209,18 @@ class World:
             extracted = min(float(self.resource[y, x]), cfg.harvest_rate * coupling)
             self.resource[y, x] -= extracted
 
-            trace_write = float(physical[3]) if cfg.environmental_memory_enabled else 0.0
+            # Ablations block the causal pathway while retaining the anonymous
+            # output channel and its energetic cost. This prevents a control
+            # from receiving an artificial advantage simply because a
+            # capability was removed.
+            trace_write = float(physical[3])
             if cfg.environmental_memory_enabled:
                 self.trace[y, x] = float(
                     np.clip(self.trace[y, x] + cfg.trace_write_rate * trace_write, -1.0, 1.0)
                 )
-            if cfg.signaling_enabled:
-                agent.emitted_signal = np.clip(physical[4 : 4 + cfg.signal_dim], -1.0, 1.0)
-            else:
-                agent.emitted_signal.fill(0.0)
+            agent.emitted_signal = np.clip(
+                physical[4 : 4 + cfg.signal_dim], -1.0, 1.0
+            )
             cost = (
                 cfg.basal_cost
                 + cfg.movement_cost * float(np.linalg.norm(velocity))
@@ -213,6 +234,14 @@ class World:
             agent.pending_reward = agent.energy - energy_before
             agent.age += 1
             self.signal_outcome_trace.append((incoming_norm, agent.pending_reward))
+            harvest_energy = cfg.harvest_efficiency * extracted
+            self.last_resource_extracted += extracted
+            self.last_harvest_energy += harvest_energy
+            self.last_energy_cost += cost
+
+        self.resource_extracted += self.last_resource_extracted
+        self.harvest_energy += self.last_harvest_energy
+        self.energy_cost += self.last_energy_cost
 
         newborns: list[Agent] = []
         for parent in list(self.agents):
@@ -239,11 +268,20 @@ class World:
 
     def to_state(self) -> dict[str, Any]:
         return {
-            "format_version": 2,
+            "format_version": 3,
             "config": self.config.to_dict(),
             "tick": self.tick,
             "births": self.births,
             "deaths": self.deaths,
+            "agent_steps": self.agent_steps,
+            "capacity_ticks": self.capacity_ticks,
+            "resource_extracted": self.resource_extracted,
+            "harvest_energy": self.harvest_energy,
+            "energy_cost": self.energy_cost,
+            "last_resource_extracted": self.last_resource_extracted,
+            "last_harvest_energy": self.last_harvest_energy,
+            "last_energy_cost": self.last_energy_cost,
+            "last_agent_steps": self.last_agent_steps,
             "next_agent_identifier": self.next_agent_identifier,
             "rng_state": self.rng.bit_generator.state,
             "sensor_permutation": self.sensor_permutation.tolist(),
@@ -258,13 +296,22 @@ class World:
 
     @classmethod
     def from_state(cls, state: dict[str, Any]) -> "World":
-        if state.get("format_version") != 2:
+        if state.get("format_version") not in {2, 3}:
             raise ValueError("unsupported checkpoint format")
         config = SimulationConfig.from_dict(state["config"])
         world = cls(config, initialize=False)
         world.tick = int(state["tick"])
         world.births = int(state["births"])
         world.deaths = int(state["deaths"])
+        world.agent_steps = int(state.get("agent_steps", 0))
+        world.capacity_ticks = int(state.get("capacity_ticks", 0))
+        world.resource_extracted = float(state.get("resource_extracted", 0.0))
+        world.harvest_energy = float(state.get("harvest_energy", 0.0))
+        world.energy_cost = float(state.get("energy_cost", 0.0))
+        world.last_resource_extracted = float(state.get("last_resource_extracted", 0.0))
+        world.last_harvest_energy = float(state.get("last_harvest_energy", 0.0))
+        world.last_energy_cost = float(state.get("last_energy_cost", 0.0))
+        world.last_agent_steps = int(state.get("last_agent_steps", 0))
         world.next_agent_identifier = int(state["next_agent_identifier"])
         world.rng.bit_generator.state = state["rng_state"]
         world.sensor_permutation = np.asarray(state["sensor_permutation"], dtype=np.int64)

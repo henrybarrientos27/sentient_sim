@@ -81,6 +81,34 @@ class SimulationTests(unittest.TestCase):
         for left, right in zip(original.agents, restored.agents):
             np.testing.assert_allclose(left.w_actor, right.w_actor, rtol=0, atol=0)
 
+    def test_ablation_worlds_have_matched_initialization(self):
+        adaptive = World(small_config())
+        signal_blocked = World(small_config(signaling_enabled=False))
+        trace_blocked = World(small_config(environmental_memory_enabled=False))
+        for control in (signal_blocked, trace_blocked):
+            np.testing.assert_allclose(adaptive.resource, control.resource, rtol=0, atol=0)
+            np.testing.assert_allclose(
+                adaptive.sensor_permutation, control.sensor_permutation, rtol=0, atol=0
+            )
+            for left, right in zip(adaptive.agents, control.agents):
+                np.testing.assert_allclose(left.position, right.position, rtol=0, atol=0)
+                np.testing.assert_allclose(left.w_actor, right.w_actor, rtol=0, atol=0)
+
+    def test_signal_and_trace_controls_retain_output_costs(self):
+        adaptive = World(small_config())
+        signal_blocked = World(small_config(signaling_enabled=False))
+        trace_blocked = World(small_config(environmental_memory_enabled=False))
+        adaptive.step()
+        signal_blocked.step()
+        trace_blocked.step()
+        self.assertAlmostEqual(adaptive.energy_cost, signal_blocked.energy_cost)
+        self.assertAlmostEqual(adaptive.energy_cost, trace_blocked.energy_cost)
+        self.assertGreater(
+            sum(float(np.linalg.norm(agent.emitted_signal)) for agent in signal_blocked.agents),
+            0.0,
+        )
+        self.assertEqual(float(np.max(np.abs(trace_blocked.trace))), 0.0)
+
     def test_long_smoke_run_remains_finite(self):
         world = World(small_config())
         for _ in range(300):
@@ -103,11 +131,34 @@ class SimulationTests(unittest.TestCase):
                     output_directory=Path(directory),
                     replicates=2,
                 )
-        self.assertEqual(results["seeds"], [19, 20])
-        self.assertEqual(set(results["conditions"]), {
-            "adaptive", "frozen", "memoryless", "silent", "no_trace"
-        })
-        self.assertEqual(results["conditions"]["adaptive"]["replicates"], 2)
+            self.assertEqual(results["seeds"], [19, 20])
+            self.assertEqual(set(results["conditions"]), {
+                "adaptive", "frozen", "memoryless", "signal_blocked", "trace_blocked"
+            })
+            self.assertEqual(results["conditions"]["adaptive"]["replicates"], 2)
+            self.assertEqual(len(results["contrasts"]), 5)
+            self.assertEqual(results["contrasts"][0]["n"], 2)
+            self.assertTrue((Path(directory) / "runs.csv").exists())
+            self.assertTrue((Path(directory) / "contrasts.csv").exists())
+            self.assertTrue((Path(directory) / "manifest.json").exists())
+
+    def test_replicated_ablation_resumes_cached_runs(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            with redirect_stdout(StringIO()):
+                first = run_ablation_experiment(
+                    small_config(initial_agents=4, max_agents=8),
+                    ticks=3,
+                    output_directory=output,
+                    replicates=2,
+                )
+                second = run_ablation_experiment(
+                    small_config(initial_agents=4, max_agents=8),
+                    ticks=3,
+                    output_directory=output,
+                    replicates=2,
+                )
+        self.assertEqual(first, second)
 
 
 if __name__ == "__main__":

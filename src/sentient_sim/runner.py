@@ -64,7 +64,7 @@ def run_world(
     world = load_checkpoint(resume) if resume else World(config)
     start_tick = world.tick
     manifest = {
-        "format_version": 2,
+        "format_version": 3,
         "start_tick": start_tick,
         "requested_additional_ticks": ticks,
         "config": world.config.to_dict(),
