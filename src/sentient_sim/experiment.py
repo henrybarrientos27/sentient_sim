@@ -135,7 +135,7 @@ def _git_revision() -> str | None:
     try:
         completed = subprocess.run(
             ["git", "rev-parse", "HEAD"],
-            cwd=Path(__file__).resolve().parents[3],
+            cwd=Path(__file__).resolve().parents[2],
             check=True,
             capture_output=True,
             text=True,
@@ -216,6 +216,7 @@ def _run_task(
     base_config: dict[str, Any],
     ticks: int,
     protocol_sha256: str,
+    source_sha256: str,
 ) -> tuple[int, str, dict[str, Any]]:
     config = SimulationConfig.from_dict({**base_config, "seed": seed})
     run = _condition(config, ticks, CONDITIONS[name])
@@ -225,6 +226,7 @@ def _run_task(
             "condition": name,
             "overrides": CONDITIONS[name],
             "protocol_sha256": protocol_sha256,
+            "source_sha256": source_sha256,
         }
     )
     return seed, name, run
@@ -443,12 +445,17 @@ def run_ablation_experiment(
     seeds = [config.seed + offset for offset in range(replicates)]
     protocol = _protocol(config, ticks, seeds)
     protocol_sha256 = _protocol_hash(protocol)
+    source_sha256 = _source_digest()
     manifest_path = output_directory / "manifest.json"
     if manifest_path.exists():
         existing = json.loads(manifest_path.read_text())
         if existing.get("protocol_sha256") != protocol_sha256:
             raise ValueError(
                 "output directory contains a different protocol; choose a new directory"
+            )
+        if existing.get("source_sha256") != source_sha256:
+            raise ValueError(
+                "output directory was created by different source code; choose a new directory"
             )
         started_at = existing["started_at"]
     else:
@@ -457,7 +464,7 @@ def run_ablation_experiment(
     manifest = {
         "protocol": protocol,
         "protocol_sha256": protocol_sha256,
-        "source_sha256": _source_digest(),
+        "source_sha256": source_sha256,
         "git_revision": _git_revision(),
         "python": sys.version,
         "numpy": np.__version__,
@@ -486,6 +493,8 @@ def run_ablation_experiment(
                 run = json.loads(path.read_text())
                 if run.get("protocol_sha256") != protocol_sha256:
                     raise ValueError(f"protocol mismatch in cached run {path}")
+                if run.get("source_sha256") != source_sha256:
+                    raise ValueError(f"source mismatch in cached run {path}")
                 results["runs"][str(seed)][name] = run
                 print(f"seed={seed} condition={name} cached")
             else:
@@ -500,13 +509,26 @@ def run_ablation_experiment(
     if workers == 1:
         for seed, name in pending:
             save_completed(
-                *_run_task(seed, name, config.to_dict(), ticks, protocol_sha256)
+                *_run_task(
+                    seed,
+                    name,
+                    config.to_dict(),
+                    ticks,
+                    protocol_sha256,
+                    source_sha256,
+                )
             )
     else:
         with ProcessPoolExecutor(max_workers=workers) as executor:
             futures = {
                 executor.submit(
-                    _run_task, seed, name, config.to_dict(), ticks, protocol_sha256
+                    _run_task,
+                    seed,
+                    name,
+                    config.to_dict(),
+                    ticks,
+                    protocol_sha256,
+                    source_sha256,
                 ): (seed, name)
                 for seed, name in pending
             }
