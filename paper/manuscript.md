@@ -1,7 +1,7 @@
 ---
 title: "Causal characterization of adaptive mechanisms in a resource-limited multi-agent simulation"
 author: "Henry Barrientos"
-date: "Draft — 2026-07-29"
+date: "Public research release — 2026-08-01 (not peer reviewed)"
 ---
 
 # Abstract
@@ -17,13 +17,13 @@ prediction and ecological performance and explicitly excludes consciousness,
 sentience, semantic language, and subjective experience from its claims.
 
 Across 30 held-out paired seeds and 150 planned runs with a 3,000-tick horizon,
-online learning lowered one-step prediction error and improved net energy input per agent-step
-relative to frozen learning. Recurrent carryover produced a smaller supported
-ecological benefit. Neither signal delivery nor writable trace coupling produced
-a supported ecological benefit after multiplicity correction. Nine runs became
-extinct, all in the frozen condition, and no condition spent time at the
-population safety cap. These findings establish mechanism effects only within
-the specified model and parameter regime.
+online learning lowered one-step prediction error and improved net energy input
+per agent-step relative to frozen learning. Recurrent carryover produced a
+smaller supported ecological benefit. Neither signal delivery nor writable
+trace coupling produced a supported ecological benefit after multiplicity
+correction. Nine runs became extinct, all in the frozen condition, and no
+condition spent time at the population safety cap. These findings establish
+mechanism effects only within the specified model and parameter regime.
 
 # 1. Introduction
 
@@ -124,11 +124,15 @@ the pre-specified capacity-interference threshold was not exceeded.
 
 # 4. Discussion
 
-Interpret supported results as mechanism effects under this model and parameter
-regime. Treat unsupported results as null or underpowered. Discuss the designed
-energy objective, architectural priors, seed-specific rather than agent-specific
-interfaces, absence of empirical input data, sensitivity to ecological settings,
-and the inability of behavioral observations to establish private experience.
+The supported contrasts identify mechanism effects under this model and
+parameter regime, while the unsupported contrasts remain compatible with either
+small effects or insufficient power. The agents' energy objective, learning
+rules, sensor and action bandwidth, reproductive process, and ecological physics
+are all designed priors. Channel permutation hides host semantics from the
+controllers but does not remove those priors. Interfaces are seed-specific
+rather than agent-specific, the study uses no empirical environmental input,
+and only one calibrated ecological regime was tested. Behavioral observations
+from this setting cannot establish subjective or private experience.
 
 The `memoryless` label refers specifically to recurrent hidden-state carryover;
 agents still observe age, velocity, current energy change, and their previous
@@ -169,15 +173,24 @@ sentient-sim experiment \
 ```
 
 The public repository is
-<https://github.com/henrybarrientos27/sentient_sim>. A release tag and archival
-DOIs must be added here after the author reviews the materials, publishes the
-research branch, and completes the Zenodo deposits. Until then this document is
-a manuscript draft, not a peer-reviewed publication.
+<https://github.com/henrybarrientos27/sentient_sim>, and the software release is
+<https://github.com/henrybarrientos27/sentient_sim/releases/tag/v0.4.0>. The
+complete confirmatory bundle is attached to that release as
+`sentient-sim-confirmatory-v1.tar.gz`; its size and SHA-256 identity are recorded
+in the accompanying metadata JSON. An archival DOI will be added to the
+repository metadata when its permanent record is issued. This public manuscript
+is a research release, not a peer-reviewed publication.
 
 # AI-assistance disclosure
 
-Complete this section from `AI_USAGE.md` only after Henry has personally reviewed,
-executed, understood, and edited the AI-assisted materials.
+OpenAI Codex was used to critique the experimental design, implement and test
+cost-matched ablations, build the resumable statistical runner, inspect the
+confirmatory outputs, and draft and edit documentation. Codex also performed the
+final release consistency checks. Henry Barrientos initiated the project,
+directed its goals, and authorized this public release. He did not represent that
+he personally inspected every AI-assisted line before v0.4.0. Responsibility for
+future journal claims and submission remains with the human author, who must
+understand and approve the submitted version. Full details are in `AI_USAGE.md`.
 
 # References
 

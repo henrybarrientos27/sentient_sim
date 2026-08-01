@@ -125,8 +125,9 @@ correction across five fixed contrasts.
 - `research/DATA_DICTIONARY.md` defines every archived CSV field.
 - `src/ARCHITECTURE.md` gives a shorter implementation map.
 - `docs/API.md` documents the supported Python interface and examples.
-- `AI_USAGE.md` records the disclosure that must be completed and personally
-  reviewed before submission.
+- `AI_USAGE.md` records how Codex contributed to the software, analysis, and
+  release materials and states the additional human-review requirement for a
+  future journal submission.
 
 A supported contrast means that a designed mechanism changed a named observable
 under this model and parameterization. It does not establish consciousness,
@@ -142,5 +143,6 @@ evidence from the current model.
 
 ## License and citation
 
-The code is MIT licensed. Citation metadata is in `CITATION.cff`. Archive a tagged
-release and its exact result bundle with Zenodo before citing a DOI.
+The code is MIT licensed. Generated confirmatory data are released under CC BY
+4.0 as described in `research/DATA_LICENSE.md`. Citation metadata is in
+`CITATION.cff`; use the DOI once it appears in the tagged release metadata.

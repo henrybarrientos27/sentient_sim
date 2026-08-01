@@ -65,6 +65,7 @@ def package_results(experiment_directory: Path, archive_path: Path) -> dict:
             (repo_root / "research" / "PREREGISTRATION.md", "PROTOCOL.md"),
             (repo_root / "research" / "PROTOCOL_DEVIATIONS.md", "PROTOCOL_DEVIATIONS.md"),
             (repo_root / "research" / "DATA_DICTIONARY.md", "DATA_DICTIONARY.md"),
+            (repo_root / "research" / "DATA_LICENSE.md", "DATA_LICENSE.md"),
             (repo_root / "research" / "ODD.md", "ODD.md"),
             (repo_root / "research" / "confirmatory_config_v1.json", "CONFIG.json"),
             (repo_root / "AI_USAGE.md", "AI_USAGE.md"),
@@ -123,9 +124,18 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("experiment_directory", type=Path)
     parser.add_argument("archive", type=Path)
+    parser.add_argument(
+        "--metadata",
+        type=Path,
+        help="also write the archive metadata as formatted JSON",
+    )
     args = parser.parse_args()
     result = package_results(args.experiment_directory, args.archive)
-    print(json.dumps(result, indent=2, sort_keys=True))
+    serialized = json.dumps(result, indent=2, sort_keys=True) + "\n"
+    if args.metadata is not None:
+        args.metadata.parent.mkdir(parents=True, exist_ok=True)
+        args.metadata.write_text(serialized)
+    print(serialized, end="")
     return 0
 
 
