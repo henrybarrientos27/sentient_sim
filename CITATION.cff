@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the archived release."
+title: "Sentient Sim: A controlled adaptive-agent simulation with causal ablations"
+type: software
+authors:
+  - family-names: Barrientos
+    given-names: Henry
+version: 0.4.0
+date-released: 2026-08-01
+license: MIT
+repository-code: "https://github.com/henrybarrientos27/sentient_sim"
+url: "https://github.com/henrybarrientos27/sentient_sim"
+keywords:
+  - agent-based model
+  - adaptive agents
+  - causal ablation
+  - artificial life
+  - reproducible simulation
