@@ -177,9 +177,9 @@ The public repository is
 <https://github.com/henrybarrientos27/sentient_sim/releases/tag/v0.4.0>. The
 complete confirmatory bundle is attached to that release as
 `sentient-sim-confirmatory-v1.tar.gz`; its size and SHA-256 identity are recorded
-in the accompanying metadata JSON. An archival DOI will be added to the
-repository metadata when its permanent record is issued. This public manuscript
-is a research release, not a peer-reviewed publication.
+in the accompanying metadata JSON. The permanent software-and-results record is
+archived at <https://doi.org/10.5281/zenodo.21748294>. This public manuscript is
+a research release, not a peer-reviewed publication.
 
 # AI-assistance disclosure
 
