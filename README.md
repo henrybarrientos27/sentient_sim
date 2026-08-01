@@ -1,5 +1,7 @@
 # Sentient Sim
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21748294.svg)](https://doi.org/10.5281/zenodo.21748294)
+
 Sentient Sim is a reproducible agent-based research test bed for causal studies
 of adaptive behavior. The historical name is retained for project continuity;
 the software does **not** create, detect, or score consciousness. No accepted
@@ -145,4 +147,5 @@ evidence from the current model.
 
 The code is MIT licensed. Generated confirmatory data are released under CC BY
 4.0 as described in `research/DATA_LICENSE.md`. Citation metadata is in
-`CITATION.cff`; use the DOI once it appears in the tagged release metadata.
+`CITATION.cff`. Cite the archived release using DOI
+[`10.5281/zenodo.21748294`](https://doi.org/10.5281/zenodo.21748294).
